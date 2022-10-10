@@ -135,14 +135,14 @@ for list in tickers:
     except Exception:
         (df, "could not get")
 
-ticker = yf.Ticker("^OMXSPI")
+#ticker = yf.Ticker("^OMXSPI")
 
-market_portfolio_proxy = ticker.history(start="2010-01-01", end="2021-01-01", interval='1d', auto_adjust=True)
-market_portfolio_proxy = market_portfolio_proxy.to_csv(("../MidtermProject-Main/csv-files/market_portfolio_proxy.csv"))
-    
+#market_portfolio_proxy = ticker.history(start="2010-01-01", end="2021-01-01", interval='1d', auto_adjust=True)
+#market_portfolio_proxy = market_portfolio_proxy.to_csv(("../MidtermProject-Main/csv-files/market_portfolio_proxy.csv"))
+
 print(len(df_list))
 print(len(df_names))
+     
 
-#def normal_return_estimation(X)
 
-#def abnormal_return(R, X):
+
