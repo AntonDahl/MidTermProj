@@ -1,7 +1,10 @@
+from heapq import merge
 import pandas as pd
 from importlib.resources import path
 import os
 import datetime
+from sklearn import linear_model
+import numpy as np
 
 path = '../MidtermProject-main/csv-files/'
 
@@ -18,6 +21,7 @@ try:
     #print(market_portfolio_proxy)
 except:
     pass
+
 
 # importing csv-files from directory as dataframes in list
 
@@ -38,13 +42,56 @@ for root, directories, files in os.walk(path, topdown=False):
 # is conducted by subtracting the normal return of the firm over the event window from the observed
 # return of the security over the same period.   
 
-#TODO to calculate abnormal return we need a function that estimates the normal return of a security (see paper: https://www.diva-portal.org/smash/record.jsf?dswid=5370&pid=diva2%3A1576254&c=128&searchType=SIMPLE&language=en&query=linear+regression&af=%5B%22thesisLevel%3AM2%22%5D&aq=%5B%5B%5D%5D&aq2=%5B%5B%5D%5D&aqe=%5B%5D&noOfRows=50&sortOrder=author_sort_asc&sortOrder2=title_sort_asc&onlyFullText=false&sf=all)
+#df_names_list = []
 
-df_names_list = []
+#for df in df_list:
+#    df_names_list.append(df["Ticker"][1])
+
+# function for calculating beta-values
+
+#The initial task of an event study is to define the estimation window and the event window. The latter is
+#the time period over which the security prices of the chosen firms in the event will be examined, which
+#in this case is the return on individual stocks.
+
+event_window = 10
+beta_dict = {}
 
 for df in df_list:
-    df_names_list.append(df["Ticker"])
-    #print(df_names_list)
+    
+    merge_on_date = pd.merge(df, market_portfolio_proxy, on=['Date'], how='inner')
+    event_window_df = merge_on_date[:len(merge_on_date)-11]
+    x_values = event_window_df["Close_x"].values.reshape(-1,1)
+    print(x_values)
+    y_values = event_window_df["Close_y"].values.reshape(-1,1)
+    reg = linear_model.LinearRegression()
+    beta_dict[df["Ticker"][1]] = reg.fit(x_values, y_values).coef_
+
+for key in beta_dict:
+    beta_dict[key] = beta_dict[key][0][0]
+
+beta_df = pd.DataFrame.from_dict(beta_dict, orient='index',
+                       columns=["Beta"])
+
+#print(beta_df)
+#Calcuate expected return via beta values
+
+expected_return_dict = {}
+market_portfolio_proxy_np_array = market_portfolio_proxy["Close"].values
+#print(market_portfolio_proxy)
+
+for row in beta_df.itertuples():
+
+    for df in df_list:
+        if df["Ticker"][1] == row.Index:
+            merge_on_date = pd.merge(df, market_portfolio_proxy, on=['Date'], how='inner')
+            event_window_df = merge_on_date[:len(merge_on_date)-11]
+            break
+
+    #print(row.Beta)        
+    expected_return_dict[row.Index] = row.Beta * event_window_df["Close_y"].values.reshape(-1,1)
+    #print(expected_return_dict)
+
+#TODO to calculate abnormal return we need a function that estimates the normal return of a security (see paper: https://www.diva-portal.org/smash/record.jsf?dswid=5370&pid=diva2%3A1576254&c=128&searchType=SIMPLE&language=en&query=linear+regression&af=%5B%22thesisLevel%3AM2%22%5D&aq=%5B%5B%5D%5D&aq2=%5B%5B%5D%5D&aqe=%5B%5D&noOfRows=50&sortOrder=author_sort_asc&sortOrder2=title_sort_asc&onlyFullText=false&sf=all)
 
 #TODO after normal return is estimated, create function that subtracts the estimated normal return of a security 
 # from the observed return of the same security over the defined event window
