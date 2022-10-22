@@ -5,6 +5,7 @@ import os
 import datetime
 from sklearn import linear_model
 import numpy as np
+import matplotlib.pyplot as plt
 
 path = '../MidtermProject-main/csv-files/'
 
@@ -13,7 +14,8 @@ market_portfolio_proxy = pd.read_csv("../MidtermProject-main/OMXSPI.csv/OMXSPI.c
 
 try:
     for row in market_portfolio_proxy.itertuples():
-        market_portfolio_proxy.at[row.Index, 'Date'] = datetime.datetime.strptime(str(market_portfolio_proxy.at[row.Index, 'Date']), '%m/%d/%Y %H:%M:%S').strftime('%Y-%m-%d')
+        market_portfolio_proxy.at[row.Index, 'Date'] = datetime.datetime.strptime(str(market_portfolio_proxy.at[row.Index, 'Date']), 
+        '%m/%d/%Y %H:%M:%S').strftime('%Y-%m-%d')
 except:
     pass
 
@@ -95,16 +97,33 @@ abnormal_return_dict = {}
 
 def abnormal_return(df):
     merge_on_date = pd.merge(df, market_portfolio_proxy, on=['Date'], how='inner')
-    #print(merge_on_date[len(merge_on_date)-11:])
     event_window_df = merge_on_date[len(merge_on_date)-11:]
     observed_return_of_stock = event_window_df["Return_x"].values.reshape(-1,1).sum()
     normal_return_of_stock = normal_return_dict[df["Ticker"][1]]
     abnormal_return_of_stock = observed_return_of_stock - normal_return_of_stock
-    #print("observed:",observed_return_of_stock)
-    #print("normal:",normal_return_of_stock)
-    #print("abnormal_return:", abnormal_return_of_stock)
     abnormal_return_dict[df["Ticker"][1]] = abnormal_return_of_stock
 
+
+daily_abnormal_return_dict = {}
+
+
+def daily_abnormal_return(df):
+    merge_on_date = pd.merge(df, market_portfolio_proxy, on=['Date'], how='inner')
+    event_window_df = merge_on_date[len(merge_on_date)-11:]
+    daily_observed_return_of_stock = event_window_df["Return_x"].values.reshape(-1,1)
+    normal_return_of_stock = normal_return_dict[df["Ticker"][1]]
+
+    daily_abnormal_return_list = []
+    
+    for i in range(len(daily_observed_return_of_stock)):
+        daily_abnormal_return = daily_observed_return_of_stock[i] - normal_return_of_stock
+        daily_abnormal_return_list.append(daily_abnormal_return.tolist()[0])
+    
+    daily_abnormal_return_dict[df["Ticker"][1]] = np.array(daily_abnormal_return_list)
+
+
+# possible outliers: STRAX.ST 31.84, BORG.ST4 19.827, ITAB.ST -31.335025252190906, FAG.ST1 23.272183969354053, LAGR-B.ST 18.328433922821,
+# BETS-B.ST1 -23.737635010837362, FING-B.ST -29.7031275493231
 
 for df in df_dict:
     abnormal_return(df_dict[df])
@@ -113,5 +132,32 @@ total = 0
 
 for key in abnormal_return_dict:
     total += abnormal_return_dict[key]
+average_abnormal_return = total / len(df_dict)
 
-print(total)
+
+print(average_abnormal_return)
+
+
+for df in df_dict:
+    daily_abnormal_return(df_dict[df])
+
+
+# loop through each element of each list and sum the elements if elements are equal
+daily_abnormal_return_list_of_lists = []
+summed_daily_abnormal_return_list = []
+
+for key in daily_abnormal_return_dict:
+    daily_abnormal_return_list_of_lists.append(daily_abnormal_return_dict[key]) 
+daily_abnormal_return_list_of_lists = np.array(daily_abnormal_return_list_of_lists)
+
+summed_daily_abnormal_return_list = daily_abnormal_return_list_of_lists.sum(axis=0)
+
+for i in range(len(summed_daily_abnormal_return_list)):
+    summed_daily_abnormal_return_list[i] = summed_daily_abnormal_return_list[i] / len(df_dict)
+
+print(summed_daily_abnormal_return_list)
+
+
+plt.plot([-5, -4, -3, -2, -1, 0, 1, 2, 3, 4, 5], summed_daily_abnormal_return_list)
+plt.axis([-5, 5, 0.4, 1])
+plt.show()
