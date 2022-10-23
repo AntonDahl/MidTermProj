@@ -158,6 +158,11 @@ for i in range(len(summed_daily_abnormal_return_list)):
 print(summed_daily_abnormal_return_list)
 
 
-plt.plot([-5, -4, -3, -2, -1, 0, 1, 2, 3, 4, 5], summed_daily_abnormal_return_list)
+#plt.plot([-5, -4, -3, -2, -1, 0, 1, 2, 3, 4, 5], summed_daily_abnormal_return_list)
+plt.plot([-5, -4, -3, -2, -1, 0, 1, 2, 3, 4, 5], summed_daily_abnormal_return_list, marker='o', color='black')
+plt.legend()
 plt.axis([-5, 5, 0.4, 1])
+plt.suptitle('Average Abnormal Return over Event Window', fontsize=18)
+plt.xlabel('Days', fontsize=16)
+plt.ylabel('AAR (%)', fontsize=16)
 plt.show()
