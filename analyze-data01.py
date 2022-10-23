@@ -19,7 +19,7 @@ try:
 except:
     pass
 
-
+# calculating daily return as a percentage, adding it to new column "Return" in df
 def daily_return(df):
     
     for row in df.itertuples():
@@ -49,7 +49,9 @@ for df in df_dict:
 # do same for market portfolio proxy
 daily_return(market_portfolio_proxy)
 
-# calculate Beta for stocks
+# doing inner merge on date of df of individual stock and market_portfolio_proxy df, 
+# calculate Beta value for stocks utilizing sklearn's linear regression model.
+# adding Beta to dictionary using stock ticker as key
 beta_dict = {}
 
 for df in df_dict:
@@ -79,20 +81,21 @@ for df in df_dict:
 
 print(normal_return_dict)
 
-# calculate abnormal return for the given event window period T=-5 to T=5
-
-event_window = 11
-abnormal_return_dict = {}
-
 #TODO:
 # here the authors are a little bit unclear on which time period they assign the extimations of the normal return; 
 # the equation (4) states that it is the same time period as the abnormal returns. However, the authors states on 
 # page 20:
 #
-# The estimation window is the period prior to the event window which is used to estimate the normal return
+# "The estimation window is the period prior to the event window which is used to estimate the normal return
 # which would be expected given that the event did not take place. The estimation period occurs before
 # the event window and contains a much larger time period because the expected normal return demands
-# more observations in order for the estimation to be as accurate as possible.
+# more observations in order for the estimation to be as accurate as possible."
+#
+# Right now we assume what's written on page 20 is true
+
+# calculate abnormal return for the given event window period T=-5 to T=5
+event_window = 11
+abnormal_return_dict = {}
 
 
 def abnormal_return(df):
@@ -104,6 +107,7 @@ def abnormal_return(df):
     abnormal_return_dict[df["Ticker"][1]] = abnormal_return_of_stock
 
 
+# calculate daily abnormal return for the given event window period T=-5 to T=5
 daily_abnormal_return_dict = {}
 
 
@@ -158,7 +162,7 @@ for i in range(len(summed_daily_abnormal_return_list)):
 print(summed_daily_abnormal_return_list)
 
 
-#plt.plot([-5, -4, -3, -2, -1, 0, 1, 2, 3, 4, 5], summed_daily_abnormal_return_list)
+# plots
 plt.plot([-5, -4, -3, -2, -1, 0, 1, 2, 3, 4, 5], summed_daily_abnormal_return_list, marker='o', color='black')
 plt.legend()
 plt.axis([-5, 5, 0.4, 1])

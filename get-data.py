@@ -17,14 +17,14 @@ tickers = []
 # is conducted by subtracting the normal return of the firm over the event window from the observed
 # return of the security over the same period.
 
-
+# change date from str to int
 def date_to_int(date_str):
      date_list = date_str.split("-")
      for i in range(len(date_list)):
          date_list[i] = int(date_list[i])
      return date_list
 
-     
+# finding correct time interval     
 def find_time_interval(date, days_to_add, days_to_subtract):
     # 0 Sunday and 6 Saturday are skipped
     
@@ -53,7 +53,7 @@ def find_time_interval(date, days_to_add, days_to_subtract):
     return start_date, end_date
 
 
-
+# using " " as delimiter and combination of list and split method to create list of tickers
 def string_to_list(string):
     listRes = list(string.split(" "))
     return listRes
@@ -134,14 +134,6 @@ for list in tickers:
         
     except Exception:
         (df, "could not get")
-
-#ticker = yf.Ticker("^OMXSPI")
-
-#market_portfolio_proxy = ticker.history(start="2010-01-01", end="2021-01-01", interval='1d', auto_adjust=True)
-#market_portfolio_proxy = market_portfolio_proxy.to_csv(("../MidtermProject-Main/csv-files/market_portfolio_proxy.csv"))
-
-print(len(df_list))
-print(len(df_names))
      
 
 
