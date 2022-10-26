@@ -79,7 +79,7 @@ def normal_return(df):
 for df in df_dict:
     normal_return(df_dict[df])
 
-print(normal_return_dict)
+#print(normal_return_dict)
 
 #TODO:
 # here the authors are a little bit unclear on which time period they assign the extimations of the normal return; 
@@ -139,14 +139,14 @@ for key in abnormal_return_dict:
 average_abnormal_return = total / len(df_dict)
 
 
-print(average_abnormal_return)
+#print(average_abnormal_return)
 
 
 for df in df_dict:
     daily_abnormal_return(df_dict[df])
 
 
-# loop through each element of each list and sum the elements if elements are equal
+# loop through each element of each list and sum the elements if elements in same column
 daily_abnormal_return_list_of_lists = []
 summed_daily_abnormal_return_list = []
 

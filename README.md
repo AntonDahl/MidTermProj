@@ -11,9 +11,15 @@ pip install yfinance, pandas, matplotlib, datetime, scikit-learn, numpy
 
 ---------------------------------------------------------------------------------------------
 
+HOW TO RUN:
+
+CSV-files are already saved in the repo, so you do not have to run get-data.py if you do not wish to make modifications.
+
+Run "python3 anayze-data01.py" in the terminal to output the results.
+
+---------------------------------------------------------------------------------------------
 
 MIDTERM PROJECT FALL 2022 - ADVANCED PROGRAMMING (under supervision of Prof. Biswajit Sarkar)
-
 
 ---------------------------------------------------------------------------------------------
 
